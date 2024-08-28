@@ -1,0 +1,82 @@
+/* Container for the sign-up form */
+.signup-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  max-width: 400px;
+  width: 90%; /* Use percentage to make it responsive */
+  text-align: center;
+  margin: 20px auto; /* Center the container and add top/bottom margin */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh; /* Adjust height to prevent overflow */
+  box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+/* Header styling */
+.signup-container h2 {
+  margin-bottom: 20px; /* Slightly reduce margin for better spacing */
+  font-size: 22px; /* Slightly reduce font size */
+  color: #333333;
+}
+
+/* Form input styling */
+.signup-container input[type="email"],
+.signup-container input[type="password"],
+.signup-container input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 14px;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* Button styling */
+.signup-container button {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #28a745; /* Signup button color */
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-container button:hover {
+  background-color: #218838;
+}
+
+/* Google Sign-Up button styling */
+.signup-container button:nth-of-type(2) {
+  background-color: #db4437;
+}
+
+.signup-container button:nth-of-type(2):hover {
+  background-color: #c23321;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .signup-container {
+    padding: 20px; /* Reduce padding on smaller screens */
+    max-width: 100%; /* Ensure it doesn't exceed the viewport width */
+    min-height: auto; /* Adjust height to prevent overflow */
+  }
+
+  .signup-container h2 {
+    font-size: 20px; /* Adjust font size for smaller screens */
+  }
+
+  .signup-container button {
+    padding: 8px; /* Reduce button padding on smaller screens */
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+}

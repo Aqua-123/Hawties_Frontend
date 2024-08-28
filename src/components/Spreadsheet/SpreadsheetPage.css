@@ -1,0 +1,16 @@
+.spreadsheet-controls {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.spreadsheet-container {
+  margin-top: 20px;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
