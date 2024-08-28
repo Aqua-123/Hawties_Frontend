@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./Signin.css";
-import apiClient from "../../lib/api"; // Import the API client
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import apiClient from '../../lib/api'; // Import the API client
+import './Signin.css';
 
 const Signin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleEmailSignin = async (e) => {
@@ -14,7 +14,7 @@ const Signin = () => {
     const result = await apiClient.signIn(email, password);
     if (result.success) {
       apiClient.saveToken(result.token);
-      navigate("/");
+      navigate('/');
     } else {
       setError(result.message);
     }
@@ -24,13 +24,7 @@ const Signin = () => {
     <div className="signin-container">
       <h2>Sign In</h2>
       <form onSubmit={handleEmailSignin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input
           type="password"
           placeholder="Password"

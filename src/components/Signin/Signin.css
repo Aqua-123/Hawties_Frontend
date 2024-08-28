@@ -5,27 +5,27 @@
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
   padding: 30px;
   max-width: 400px;
-  width: 90%; /* Use percentage to make it responsive */
+  width: 90%;
   text-align: center;
-  margin: 20px auto; /* Center the container and add top/bottom margin */
+  margin: 20px auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 50vh; /* Adjust height to prevent overflow */
-  box-sizing: border-box; /* Ensure padding is included in width */
+  min-height: 50vh;
+  box-sizing: border-box;
 }
 
 /* Header styling */
 .signin-container h2 {
-  margin-bottom: 20px; /* Slightly reduce margin for better spacing */
-  font-size: 22px; /* Slightly reduce font size */
+  margin-bottom: 20px;
+  font-size: 22px;
   color: #333333;
 }
 
 /* Form input styling */
-.signin-container input[type="email"],
-.signin-container input[type="password"] {
+.signin-container input[type='email'],
+.signin-container input[type='password'] {
   width: 100%;
   padding: 10px;
   margin-bottom: 14px;
@@ -65,17 +65,17 @@
 /* Responsive adjustments */
 @media (max-width: 600px) {
   .signin-container {
-    padding: 20px; /* Reduce padding on smaller screens */
-    max-width: 100%; /* Ensure it doesn't exceed the viewport width */
-    min-height: auto; /* Adjust height to prevent overflow */
+    padding: 20px;
+    max-width: 100%;
+    min-height: auto;
   }
 
   .signin-container h2 {
-    font-size: 20px; /* Adjust font size for smaller screens */
+    font-size: 20px;
   }
 
   .signin-container button {
-    padding: 8px; /* Reduce button padding on smaller screens */
-    font-size: 14px; /* Adjust font size for smaller screens */
+    padding: 8px;
+    font-size: 14px;
   }
 }
