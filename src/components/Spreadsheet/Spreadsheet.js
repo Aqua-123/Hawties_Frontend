@@ -42,18 +42,28 @@ const SpreadsheetPage = () => {
 
   useEffect(() => {
     const hotInstance = hotTableRef.current?.hotInstance;
-    if (hotInstance) hotInstance.addHook('afterChange', handleAutoSave);
+
+    const handleAutoSave = (changes, source) => {
+      if (source !== 'remoteChange' && changes) {
+        const changeData = changes.map(([row, col, oldValue, newValue]) => ({ row, col, oldValue, newValue }));
+        debouncedSave(changeData);
+      }
+    };
+
+    if (hotInstance) {
+      hotInstance.addHook('afterChange', handleAutoSave);
+    }
+
     return () => {
-      if (hotInstance) hotInstance.removeHook('afterChange', handleAutoSave);
+      if (hotInstance) {
+        // Check if the instance is destroyed before trying to remove the hook
+        if (!hotInstance.isDestroyed) {
+          hotInstance.removeHook('afterChange', handleAutoSave);
+        }
+      }
+      debouncedSave.cancel(); // Cancel debounced function on unmount
     };
   }, [debouncedSave]);
-
-  const handleAutoSave = (changes, source) => {
-    if (source !== 'remoteChange' && changes) {
-      const changeData = changes.map(([row, col, oldValue, newValue]) => ({ row, col, oldValue, newValue }));
-      debouncedSave(changeData);
-    }
-  };
 
   const handleImportCSV = async (event) => {
     const file = event.target.files[0];

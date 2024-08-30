@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { auth } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
-import apiClient from '../lib/api';
+import axiosClient from '../axiosClient';
 
 export const UserContext = createContext();
 
@@ -11,9 +11,9 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserDetails = async (email) => {
+    const fetchUserDetails = async () => {
       try {
-        const response = await apiClient.get(`/api/auth/user`);
+        const response = await axiosClient.post(`/api/auth/user`);
         if (response.data) {
           setUser((prevUser) => ({
             ...prevUser,
@@ -29,6 +29,7 @@ export const UserProvider = ({ children }) => {
       if (currentUser) {
         const { displayName, photoURL, email } = currentUser;
         setUser({ name: displayName, photoURL, email });
+        console.log('User signed in:', currentUser);
         fetchUserDetails(email); // Fetch additional user details from the backend
       } else {
         setUser(null);

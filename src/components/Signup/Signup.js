@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Signup.css';
-import apiClient from '../../lib/api';
+import axiosClient from '../../axiosClient';
 import { auth, googleProvider, githubProvider } from '../../lib/firebase';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -16,7 +16,7 @@ import { FaGoogle, FaGithub } from 'react-icons/fa';
 const sendUserDataToServer = async (user) => {
   console.log('User data:', user);
   try {
-    await apiClient.post('/api/auth/signup', {
+    await axiosClient.post('/api/auth/signup', {
       name: user.displayName,
       email: user.email,
       uid: user.uid,
