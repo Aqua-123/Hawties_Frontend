@@ -24,8 +24,15 @@ const useSpreadsheetData = (id) => {
     fetchSpreadsheet();
   }, [id]);
 
+  // set new screadsheet data but its format is same as the fetch data so it needs to be similarly handled
+  const setNewSpreadsheetData = (data) => {
+    setHeaders(Object.keys(data[0]));
+    setSpreadsheetData(Object.values(data).map(Object.values));
+  };
+
   return {
     spreadsheetData,
+    setNewSpreadsheetData,
     headers,
     loading,
     error,

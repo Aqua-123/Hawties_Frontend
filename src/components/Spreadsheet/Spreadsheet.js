@@ -4,8 +4,9 @@ import 'handsontable/dist/handsontable.full.min.css';
 import { CircularProgress, Typography } from '@material-ui/core';
 import { useParams, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
-import io from 'socket.io-client';
 import useSpreadsheetData from '../../hooks/useSpreadsheetData';
+import useSpreadsheetSocket from '../../hooks/useSpreadsheetSocket';
+import useCollaboratorManagement from '../../hooks/useCollaboratorManagement';
 import CollaboratorDialog from '../CollaboratorDialog';
 import SpreadsheetToolbar from '../SpreadsheetToolbar';
 import apiClient from '../../lib/api';
@@ -13,161 +14,73 @@ import './SpreadsheetPage.css';
 
 const SpreadsheetPage = () => {
   const { id } = useParams();
-  const hotTableRef = useRef(null);
   const navigate = useNavigate();
-  const socketRef = useRef(null);
+  const hotTableRef = useRef(null);
+  const spreadsheetDataHook = useSpreadsheetData(id);
 
-  const { spreadsheetData, headers, loading, error, setSpreadsheetData, setError, setLoading } = useSpreadsheetData(id);
+  const socketHook = useSpreadsheetSocket(id, hotTableRef);
+  const {
+    error: collaboratorError,
+    collaboratorEmail,
+    setCollaboratorEmail,
+    collaboratorRole,
+    setCollaboratorRole,
+    isAddCollaboratorDialogOpen,
+    setIsAddCollaboratorDialogOpen,
+    isRemoveCollaboratorDialogOpen,
+    setIsRemoveCollaboratorDialogOpen,
+    handleAddCollaborator,
+    handleRemoveCollaborator,
+  } = useCollaboratorManagement(id);
 
-  const [collaboratorEmail, setCollaboratorEmail] = useState('');
-  const [collaboratorRole, setCollaboratorRole] = useState('viewer');
-  const [isAddCollaboratorDialogOpen, setIsAddCollaboratorDialogOpen] = useState(false);
-  const [isRemoveCollaboratorDialogOpen, setIsRemoveCollaboratorDialogOpen] = useState(false);
-
-  // Initialize socket connection
-  useEffect(() => {
-    socketRef.current = io('http://localhost:5000');
-
-    socketRef.current.emit('joinSpreadsheet', id);
-
-    socketRef.current.on('cellChanged', (data) => {
-      const { changes } = data;
-      const hotInstance = hotTableRef.current?.hotInstance;
-
-      if (hotInstance) {
-        changes.forEach(({ row, col, newValue }) => {
-          hotInstance.setDataAtCell(row, col, newValue, 'remoteChange');
-        });
-      }
-    });
-
-    socketRef.current.on('rowAdded', ({ rowIndex }) => {
-      const hotInstance = hotTableRef.current?.hotInstance;
-      if (hotInstance) {
-        hotInstance.alter('insert_row', rowIndex);
-      }
-    });
-
-    socketRef.current.on('rowRemoved', ({ rowIndex }) => {
-      const hotInstance = hotTableRef.current?.hotInstance;
-      if (hotInstance) {
-        hotInstance.alter('remove_row', rowIndex);
-      }
-    });
-
-    socketRef.current.on('columnAdded', ({ colIndex }) => {
-      const hotInstance = hotTableRef.current?.hotInstance;
-      if (hotInstance) {
-        hotInstance.alter('insert_col', colIndex);
-      }
-    });
-
-    socketRef.current.on('columnRemoved', ({ colIndex }) => {
-      const hotInstance = hotTableRef.current?.hotInstance;
-      if (hotInstance) {
-        hotInstance.alter('remove_col', colIndex);
-      }
-    });
-
-    return () => {
-      socketRef.current.emit('leaveSpreadsheet', id);
-      socketRef.current.disconnect();
-    };
-  }, [id]);
-
-  // Debounced save function
   const debouncedSave = useRef(
     debounce((changes) => {
-      if (socketRef.current && changes.length > 0) {
-        socketRef.current.emit('changeCell', {
-          spreadsheetId: id,
-          changes: changes.map(({ row, col, oldValue, newValue }) => ({ row, col, oldValue, newValue })),
-        });
-      }
+      if (!changes.length) return;
+      socketHook.emitChangeCell(changes);
     }, 1000)
   ).current;
 
   useEffect(() => {
     const hotInstance = hotTableRef.current?.hotInstance;
-
-    const handleAutoSave = (changes, source) => {
-      if (hotInstance && changes && source !== 'remoteChange') {
-        const changeData = changes.map(([row, col, oldValue, newValue]) => ({
-          row,
-          col,
-          oldValue,
-          newValue,
-        }));
-        debouncedSave(changeData);
-      }
-    };
-
-    if (hotInstance) {
-      hotInstance.addHook('afterChange', (changes, source) => {
-        if (source !== 'loadData') {
-          handleAutoSave(changes, source);
-        }
-      });
-    }
-
+    if (hotInstance) hotInstance.addHook('afterChange', handleAutoSave);
     return () => {
-      if (hotInstance && !hotInstance.isDestroyed) {
-        hotInstance.removeHook('afterChange', handleAutoSave);
-      }
+      if (hotInstance) hotInstance.removeHook('afterChange', handleAutoSave);
     };
   }, [debouncedSave]);
 
+  const handleAutoSave = (changes, source) => {
+    if (source !== 'remoteChange' && changes) {
+      const changeData = changes.map(([row, col, oldValue, newValue]) => ({ row, col, oldValue, newValue }));
+      debouncedSave(changeData);
+    }
+  };
+
   const handleImportCSV = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setLoading(true);
-      try {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const result = await apiClient.importData(id, formData);
-        if (result.success) {
-          const formattedData = result.data.map(([key, value]) => value);
-          setSpreadsheetData(formattedData);
-          hotTableRef.current.hotInstance.loadData(formattedData);
-        } else {
-          setError(result.message);
-        }
-      } catch (err) {
-        setError('Failed to import CSV file.');
-      } finally {
-        setLoading(false);
+    if (!file) return alert('No file selected.');
+    spreadsheetDataHook.setLoading(true);
+    try {
+      const result = await apiClient.importData(id, file);
+      if (result.success) {
+        spreadsheetDataHook.setNewSpreadsheetData(result.data);
+        return;
       }
+      spreadsheetDataHook.setError(result.message);
+    } catch (err) {
+      spreadsheetDataHook.setError('Failed to import CSV file.');
+    } finally {
+      spreadsheetDataHook.setLoading(false);
     }
   };
 
   const handleDeleteSpreadsheet = async () => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this spreadsheet?');
-    if (confirmDelete) {
+    if (!window.confirm('Are you sure you want to delete this spreadsheet?')) return;
+    try {
       const result = await apiClient.deleteSpreadsheet(id);
-      if (result.success) {
-        navigate('/spreadsheets');
-      } else {
-        setError(result.message);
-      }
-    }
-  };
-
-  const handleAddCollaborator = async () => {
-    const result = await apiClient.addCollaborator(id, collaboratorEmail, collaboratorRole);
-    if (result.success) {
-      setIsAddCollaboratorDialogOpen(false);
-    } else {
-      setError(result.message);
-    }
-  };
-
-  const handleRemoveCollaborator = async () => {
-    const result = await apiClient.removeCollaborator(id, collaboratorEmail);
-    if (result.success) {
-      setIsRemoveCollaboratorDialogOpen(false);
-    } else {
-      setError(result.message);
+      if (result.success) navigate('/spreadsheets');
+      else spreadsheetDataHook.setError(result.message);
+    } catch (err) {
+      spreadsheetDataHook.setError('Failed to delete spreadsheet.');
     }
   };
 
@@ -179,17 +92,17 @@ const SpreadsheetPage = () => {
         onAddCollaborator={() => setIsAddCollaboratorDialogOpen(true)}
         onRemoveCollaborator={() => setIsRemoveCollaboratorDialogOpen(true)}
       />
-      {loading && <CircularProgress />}
-      {error && (
+      {spreadsheetDataHook.loading && <CircularProgress />}
+      {(spreadsheetDataHook.error || collaboratorError) && (
         <Typography color="error" variant="body2">
-          {error}
+          {spreadsheetDataHook.error || collaboratorError}
         </Typography>
       )}
       <div className="spreadsheet-container">
         <HotTable
           ref={hotTableRef}
-          data={spreadsheetData}
-          colHeaders={headers}
+          data={spreadsheetDataHook.spreadsheetData}
+          colHeaders={spreadsheetDataHook.headers}
           rowHeaders={true}
           width="100%"
           height="600px"
@@ -202,22 +115,14 @@ const SpreadsheetPage = () => {
           multiColumnSorting={true}
           dropdownMenu={true}
           columnSorting={true}
-          autoRowSize={true}
           autoColumnSize={true}
+          autoRowSize={false}
           mergeCells={true}
           stretchH="all"
-          // afterCreateRow={(index) => {
-          //   socketRef.current.emit('addRow', { spreadsheetId: id, rowIndex: index });
-          // }}
-          // afterRemoveRow={(index, amount) => {
-          //   socketRef.current.emit('removeRow', { spreadsheetId: id, rowIndex: index, amount });
-          // }}
-          // afterCreateCol={(index) => {
-          //   socketRef.current.emit('addColumn', { spreadsheetId: id, colIndex: index });
-          // }}
-          // afterRemoveCol={(index, amount) => {
-          //   socketRef.current.emit('removeColumn', { spreadsheetId: id, colIndex: index, amount });
-          // }}
+          afterCreateRow={(index) => socketHook.emitAddRow(index)}
+          afterRemoveRow={(index, amount) => socketHook.emitRemoveRow(index, amount)}
+          afterCreateCol={(index) => socketHook.emitAddColumn(index)}
+          afterRemoveCol={(index, amount) => socketHook.emitRemoveColumn(index, amount)}
         />
       </div>
 

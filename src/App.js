@@ -6,7 +6,6 @@ import SpreadsheetPage from './components/Spreadsheet/Spreadsheet';
 import SpreadsheetsPage from './components/Spreadsheets/SpreadsheetsPage';
 import { PrimeReactProvider } from 'primereact/api';
 import 'handsontable/dist/handsontable.full.min.css';
-import Handsontable from 'handsontable/base';
 import { registerAllModules } from 'handsontable/registry';
 
 registerAllModules();
