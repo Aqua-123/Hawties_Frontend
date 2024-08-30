@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useContext } from 'react';
 import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.min.css';
 import { CircularProgress, Typography } from '@material-ui/core';
@@ -6,11 +6,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
 import useSpreadsheetData from '../../hooks/useSpreadsheetData';
 import useSpreadsheetSocket from '../../hooks/useSpreadsheetSocket';
-import useCollaboratorManagement from '../../hooks/useCollaboratorManagement';
-import CollaboratorDialog from '../CollaboratorDialog';
 import SpreadsheetToolbar from '../SpreadsheetToolbar';
 import apiClient from '../../lib/api';
 import './SpreadsheetPage.css';
+import Header from '../Header';
+import { ModalContextProvider } from '../../contexts/ModalContext';
+
+const MemoizedHotTable = React.memo(HotTable);
 
 const SpreadsheetPage = () => {
   const { id } = useParams();
@@ -19,19 +21,6 @@ const SpreadsheetPage = () => {
   const spreadsheetDataHook = useSpreadsheetData(id);
 
   const socketHook = useSpreadsheetSocket(id, hotTableRef);
-  const {
-    error: collaboratorError,
-    collaboratorEmail,
-    setCollaboratorEmail,
-    collaboratorRole,
-    setCollaboratorRole,
-    isAddCollaboratorDialogOpen,
-    setIsAddCollaboratorDialogOpen,
-    isRemoveCollaboratorDialogOpen,
-    setIsRemoveCollaboratorDialogOpen,
-    handleAddCollaborator,
-    handleRemoveCollaborator,
-  } = useCollaboratorManagement(id);
 
   const debouncedSave = useRef(
     debounce((changes) => {
@@ -40,15 +29,23 @@ const SpreadsheetPage = () => {
     }, 1000)
   ).current;
 
-  useEffect(() => {
-    const hotInstance = hotTableRef.current?.hotInstance;
-
-    const handleAutoSave = (changes, source) => {
+  const handleAutoSave = useCallback(
+    (changes, source) => {
       if (source !== 'remoteChange' && changes) {
-        const changeData = changes.map(([row, col, oldValue, newValue]) => ({ row, col, oldValue, newValue }));
+        const changeData = changes.map(([row, col, oldValue, newValue]) => ({
+          row,
+          col,
+          oldValue,
+          newValue,
+        }));
         debouncedSave(changeData);
       }
-    };
+    },
+    [debouncedSave]
+  );
+
+  useEffect(() => {
+    const hotInstance = hotTableRef.current?.hotInstance;
 
     if (hotInstance) {
       hotInstance.addHook('afterChange', handleAutoSave);
@@ -56,14 +53,13 @@ const SpreadsheetPage = () => {
 
     return () => {
       if (hotInstance) {
-        // Check if the instance is destroyed before trying to remove the hook
         if (!hotInstance.isDestroyed) {
           hotInstance.removeHook('afterChange', handleAutoSave);
         }
       }
-      debouncedSave.cancel(); // Cancel debounced function on unmount
+      debouncedSave.cancel();
     };
-  }, [debouncedSave]);
+  }, [handleAutoSave, debouncedSave]);
 
   const handleImportCSV = async (event) => {
     const file = event.target.files[0];
@@ -95,66 +91,47 @@ const SpreadsheetPage = () => {
   };
 
   return (
-    <div>
-      <SpreadsheetToolbar
-        onImportCSV={handleImportCSV}
-        onDeleteSpreadsheet={handleDeleteSpreadsheet}
-        onAddCollaborator={() => setIsAddCollaboratorDialogOpen(true)}
-        onRemoveCollaborator={() => setIsRemoveCollaboratorDialogOpen(true)}
-      />
-      {spreadsheetDataHook.loading && <CircularProgress />}
-      {(spreadsheetDataHook.error || collaboratorError) && (
-        <Typography color="error" variant="body2">
-          {spreadsheetDataHook.error || collaboratorError}
-        </Typography>
-      )}
-      <div className="spreadsheet-container">
-        <HotTable
-          ref={hotTableRef}
-          data={spreadsheetDataHook.spreadsheetData}
-          colHeaders={spreadsheetDataHook.headers}
-          rowHeaders={true}
-          width="100%"
-          height="600px"
-          licenseKey="non-commercial-and-evaluation"
-          contextMenu={true}
-          manualRowResize={true}
-          manualColumnResize={true}
-          formulas={true}
-          filters={true}
-          multiColumnSorting={true}
-          dropdownMenu={true}
-          columnSorting={true}
-          autoColumnSize={true}
-          autoRowSize={false}
-          mergeCells={true}
-          stretchH="all"
-          afterCreateRow={(index) => socketHook.emitAddRow(index)}
-          afterRemoveRow={(index, amount) => socketHook.emitRemoveRow(index, amount)}
-          afterCreateCol={(index) => socketHook.emitAddColumn(index)}
-          afterRemoveCol={(index, amount) => socketHook.emitRemoveColumn(index, amount)}
-        />
+    <ModalContextProvider>
+      <div>
+        <Header />
+        <SpreadsheetToolbar onImportCSV={handleImportCSV} onDeleteSpreadsheet={handleDeleteSpreadsheet} />
+        {spreadsheetDataHook.loading && <CircularProgress />}
+        {spreadsheetDataHook.error && (
+          <Typography color="error" variant="body2">
+            {spreadsheetDataHook.error}
+          </Typography>
+        )}
+        <div className="spreadsheet-container">
+          <MemoizedHotTable
+            ref={hotTableRef}
+            data={spreadsheetDataHook.spreadsheetData}
+            colHeaders={spreadsheetDataHook.headers}
+            rowHeaders={true}
+            width="100%"
+            height="600px"
+            licenseKey="non-commercial-and-evaluation"
+            contextMenu={true}
+            manualRowResize={true}
+            manualColumnResize={true}
+            formulas={true}
+            filters={true}
+            multiColumnSorting={true}
+            dropdownMenu={true}
+            columnSorting={true}
+            autoColumnSize={true}
+            autoRowSize={false}
+            mergeCells={true}
+            stretchH="all"
+            viewportColumnRenderingOffset={10}
+            viewportRowRenderingOffset={20}
+            afterCreateRow={(index) => socketHook.emitAddRow(index)}
+            afterRemoveRow={(index, amount) => socketHook.emitRemoveRow(index, amount)}
+            afterCreateCol={(index) => socketHook.emitAddColumn(index)}
+            afterRemoveCol={(index, amount) => socketHook.emitRemoveColumn(index, amount)}
+          />
+        </div>
       </div>
-
-      <CollaboratorDialog
-        open={isAddCollaboratorDialogOpen}
-        onClose={() => setIsAddCollaboratorDialogOpen(false)}
-        onSubmit={handleAddCollaborator}
-        collaboratorEmail={collaboratorEmail}
-        setCollaboratorEmail={setCollaboratorEmail}
-        collaboratorRole={collaboratorRole}
-        setCollaboratorRole={setCollaboratorRole}
-      />
-
-      <CollaboratorDialog
-        open={isRemoveCollaboratorDialogOpen}
-        onClose={() => setIsRemoveCollaboratorDialogOpen(false)}
-        onSubmit={handleRemoveCollaborator}
-        collaboratorEmail={collaboratorEmail}
-        setCollaboratorEmail={setCollaboratorEmail}
-        isAdding={false}
-      />
-    </div>
+    </ModalContextProvider>
   );
 };
 

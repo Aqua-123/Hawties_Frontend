@@ -1,5 +1,5 @@
 .spreadsheet-controls {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   display: flex;
   gap: 10px;
   justify-content: flex-start;
@@ -8,6 +8,8 @@
 
 .spreadsheet-container {
   margin-top: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .error-message {

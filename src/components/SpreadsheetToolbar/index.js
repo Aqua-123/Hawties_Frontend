@@ -1,38 +1,30 @@
 import React from 'react';
-import { Button, Menu, MenuItem, IconButton, Divider } from '@material-ui/core';
-import { ArrowDropDown, PersonAdd, Delete } from '@material-ui/icons';
-import { CloudDownload } from '@material-ui/icons';
-
-import { CascadeSelect } from 'primereact/cascadeselect';
-
-// Download cascade
-
-const downloadOptions = [
-  { label: '.csv', icon: 'pi pi-fw pi-file' },
-  { label: '.xlsx', icon: 'pi pi-fw pi-file' },
-  { label: '.txt', icon: 'pi pi-fw pi-file' },
-  { label: 'Parquet', icon: 'pi pi-fw pi-file' },
-  { label: 'JSON', icon: 'pi pi-fw pi-file' },
-];
+import { Button, Menu, MenuItem, IconButton, Divider, Tooltip } from '@material-ui/core';
+import { ArrowDropDown, PersonAdd, Delete, CloudDownload } from '@material-ui/icons';
+import { CloudUpload } from '@material-ui/icons';
+import { useModalContext } from '../../contexts/ModalContext';
 
 const importOptions = [
-  { label: 'CSV', icon: 'pi pi-fw pi-file' },
-  { label: 'Excel', icon: 'pi pi-fw pi-file' },
-  { label: 'JSON', icon: 'pi pi-fw pi-file' },
-  { label: 'Parquet', icon: 'pi pi-fw pi-file' },
+  { label: 'CSV', accept: '.csv' },
+  { label: 'Excel (XLSX)', accept: '.xlsx' },
+  { label: 'JSON', accept: '.json' },
+  { label: 'Parquet', accept: '.parquet' },
+  // Add more file types as needed
 ];
 
-const fileOptions = [
-  { label: 'Download', items: downloadOptions },
-  { label: 'Import', items: importOptions },
-];
-
-const SpreadsheetToolbar = ({ onImportCSV, onDeleteSpreadsheet, onAddCollaborator, onRemoveCollaborator }) => {
+const SpreadsheetToolbar = ({ onImportFile, onDeleteSpreadsheet }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [importMenuEl, setImportMenuEl] = React.useState(null);
   const [downloadMenuEl, setDownloadMenuEl] = React.useState(null);
+
+  const { setIsAddCollaboratorDialogOpen, setIsRemoveCollaboratorDialogOpen } = useModalContext(); // Use modal context
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleImportClick = (event) => {
+    setImportMenuEl(event.currentTarget);
   };
 
   const handleDownloadClick = (event) => {
@@ -41,25 +33,46 @@ const SpreadsheetToolbar = ({ onImportCSV, onDeleteSpreadsheet, onAddCollaborato
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setImportMenuEl(null);
     setDownloadMenuEl(null);
   };
 
-  return (
-    <div className="spreadsheet-toolbar">
-      <Button variant="contained" component="label">
-        Import CSV
-        <input type="file" accept=".csv" hidden onChange={onImportCSV} />
-      </Button>
+  const handleFileChange = (event, fileType) => {
+    onImportFile(event, fileType);
+    handleMenuClose();
+  };
 
-      <Button
-        aria-controls="simple-menu"
-        aria-haspopup="true"
-        onClick={handleDownloadClick}
-        startIcon={<CloudDownload />}
-        endIcon={<ArrowDropDown />}
-      >
-        Download
-      </Button>
+  return (
+    <div className="spreadsheet-toolbar" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <Tooltip title="Import Options">
+        <IconButton aria-controls="import-menu" aria-haspopup="true" onClick={handleImportClick} color="primary">
+          <CloudUpload />
+          <ArrowDropDown />
+        </IconButton>
+      </Tooltip>
+      <Menu id="import-menu" anchorEl={importMenuEl} keepMounted open={Boolean(importMenuEl)} onClose={handleMenuClose}>
+        {importOptions.map((option) => (
+          <MenuItem key={option.label}>
+            <input
+              type="file"
+              accept={option.accept}
+              style={{ display: 'none' }}
+              id={`import-${option.label}`}
+              onChange={(e) => handleFileChange(e, option.label)}
+            />
+            <label htmlFor={`import-${option.label}`} style={{ width: '100%', cursor: 'pointer' }}>
+              {option.label}
+            </label>
+          </MenuItem>
+        ))}
+      </Menu>
+
+      <Tooltip title="Download Options">
+        <IconButton aria-controls="download-menu" aria-haspopup="true" onClick={handleDownloadClick} color="primary">
+          <CloudDownload />
+          <ArrowDropDown />
+        </IconButton>
+      </Tooltip>
       <Menu
         id="download-menu"
         anchorEl={downloadMenuEl}
@@ -72,25 +85,24 @@ const SpreadsheetToolbar = ({ onImportCSV, onDeleteSpreadsheet, onAddCollaborato
         <MenuItem onClick={handleMenuClose}>Download as .pdf</MenuItem>
       </Menu>
 
-      <IconButton
-        aria-controls="collaborator-menu"
-        aria-haspopup="true"
-        onClick={handleMenuClick}
-        startIcon={<PersonAdd />}
-      >
-        Collaborators
-        <ArrowDropDown />
-      </IconButton>
+      <Tooltip title="Collaborators">
+        <IconButton aria-controls="collaborator-menu" aria-haspopup="true" onClick={handleMenuClick} color="primary">
+          <PersonAdd />
+          <ArrowDropDown />
+        </IconButton>
+      </Tooltip>
       <Menu id="collaborator-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleMenuClose}>
-        <MenuItem onClick={onAddCollaborator}>Add Collaborator</MenuItem>
-        <MenuItem onClick={onRemoveCollaborator}>Remove Collaborator</MenuItem>
+        <MenuItem onClick={() => setIsAddCollaboratorDialogOpen(true)}>Add Collaborator</MenuItem>
+        <MenuItem onClick={() => setIsRemoveCollaboratorDialogOpen(true)}>Remove Collaborator</MenuItem>
       </Menu>
 
-      <Divider orientation="vertical" flexItem />
+      <Divider orientation="vertical" flexItem style={{ margin: '0 10px' }} />
 
-      <Button variant="contained" color="secondary" onClick={onDeleteSpreadsheet} startIcon={<Delete />}>
-        Delete Spreadsheet
-      </Button>
+      <Tooltip title="Delete Spreadsheet">
+        <IconButton variant="contained" color="secondary" onClick={onDeleteSpreadsheet}>
+          <Delete />
+        </IconButton>
+      </Tooltip>
     </div>
   );
 };

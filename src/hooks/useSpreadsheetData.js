@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import apiClient from '../lib/api';
 
 const useSpreadsheetData = (id) => {
@@ -24,22 +24,26 @@ const useSpreadsheetData = (id) => {
     fetchSpreadsheet();
   }, [id]);
 
-  // set new screadsheet data but its format is same as the fetch data so it needs to be similarly handled
-  const setNewSpreadsheetData = (data) => {
+  // Memoize the setNewSpreadsheetData function
+  const setNewSpreadsheetData = useCallback((data) => {
     setHeaders(Object.keys(data[0]));
     setSpreadsheetData(Object.values(data).map(Object.values));
-  };
+  }, []);
 
-  return {
-    spreadsheetData,
-    setNewSpreadsheetData,
-    headers,
-    loading,
-    error,
-    setSpreadsheetData,
-    setLoading,
-    setError,
-  };
+  // Memoize the return values to prevent unnecessary re-renders
+  return useMemo(
+    () => ({
+      spreadsheetData,
+      setNewSpreadsheetData,
+      headers,
+      loading,
+      error,
+      setSpreadsheetData,
+      setLoading,
+      setError,
+    }),
+    [spreadsheetData, headers, loading, error, setNewSpreadsheetData]
+  );
 };
 
 export default useSpreadsheetData;

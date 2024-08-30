@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../lib/api'; // Import the API client
+import axiosClient from '../../axiosClient';
 import './Signin.css';
 import { auth, googleProvider, githubProvider } from '../../lib/firebase';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
@@ -26,14 +26,8 @@ const Signin = () => {
   const handleEmailSignin = async (e) => {
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      const token = await user.getIdToken();
-
-      // Optionally, you can send the token to your backend to establish a session or verify the user
-      await apiClient.post('/api/auth/signin', { token });
-
-      navigate('/');
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate('/spreadsheets');
     } catch (error) {
       setError(error.message);
     }
@@ -41,14 +35,8 @@ const Signin = () => {
 
   const handleGoogleSignin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const token = await user.getIdToken();
-
-      // Optionally, you can send the token to your backend to establish a session or verify the user
-      await apiClient.post('/api/auth/signin', { token });
-
-      navigate('/');
+      await signInWithPopup(auth, googleProvider);
+      navigate('/spreadsheets');
     } catch (error) {
       setError(error.message);
     }
@@ -56,14 +44,8 @@ const Signin = () => {
 
   const handleGithubSignin = async () => {
     try {
-      const result = await signInWithPopup(auth, githubProvider);
-      const user = result.user;
-      const token = await user.getIdToken();
-
-      // Optionally, you can send the token to your backend to establish a session or verify the user
-      await apiClient.post('/api/auth/signin', { token });
-
-      navigate('/');
+      await signInWithPopup(auth, githubProvider);
+      navigate('/spreadsheets');
     } catch (error) {
       setError(error.message);
     }
