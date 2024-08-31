@@ -1,119 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="circles">
-        <div class="circle circle-1"></div>
-        <div class="circle circle-2"></div>
-        <div class="circle circle-3"></div>
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
     </div>
     <div class="circles-bottom">
-        <div class="circle-bottom circle-bottom-1"></div>
-        <div class="circle-bottom circle-bottom-2"></div>
-        <div class="circle-bottom circle-bottom-3"></div>
+      <div class="circle-bottom circle-bottom-1"></div>
+      <div class="circle-bottom circle-bottom-2"></div>
+      <div class="circle-bottom circle-bottom-3"></div>
     </div>
     <div class="outer_conntainer">
-        <div class="signin_container">
-            
-            <div class="header">
+      <div class="signin_container">
+        <div class="header">
+          <header class="header-content">
+            <a href="#logo" class="logo">
+              <img src="logo192.png" alt="logoImage" class="logo-icon" />
+              <span class="logo-text">SpreadSheets</span>
+            </a>
 
-                <header class="header-content">
-        
-                    <a href="#logo" class="logo">
-                        <img src="logo192.png" alt="logoImage" class="logo-icon" />
-                        <span class="logo-text">SpreadSheets</span>
-                    </a>
-        
-                    <nav class="nav">
-                        
-                        <a href="#aboutus" class="nav-link">about us</a>
-                        <a href="#blog" class="nav-link">contact us </a>
-                        <a href="#about" class="nav-link">About</a>
-                    </nav>
-        
-                    <!-- <a href="#contact" class="contact-button">
-                        Contact Us
-                    </a> -->
-        
-                    <button type="button" class="menu-button">
-                        <img src="./images/Hamburger.svg" alt="menuButton" class="menu-icon" />
-                    </button>
-        
-                </header>
-            </div>
-            <div class="main-section">
-                
+            <nav class="nav">
+              <a href="#aboutus" class="nav-link">about us</a>
+              <a href="#blog" class="nav-link">contact us </a>
+              <a href="#about" class="nav-link">About</a>
+            </nav>
 
-                <div class="content-left">
-                    <div class="button-group">
-                        <button class="signin-button ">Signin</button>
-                        <a href="#signup" class="signup-button">Signup</a>
-                    </div>
-                    <div class="credentials">
-                        <fieldset>
-                            <label for="signin"></label>
-                            <input type="text" name="login" class="signin-text" autocomplete="off" data-cypress="Email" placeholder=" Email or Username">
-                        </fieldset>
-                        <fieldset>
-                            <label for="password" class="password"></label>
-                            <input type="password" name="password" id="password"  class="signin-text"   data-cypress="password" placeholder="Password">
-                        </fieldset>
-                        <div class="creds-footer">
-                            <a href="/password_resets/new" class="forgot-password">forgot password?</a>
-                            <input type="submit" value="Signin" class="submit" >
-                        </div>
-                        
-
-                    </div>
-                    <div class="signinwith">
-                        <button class="signinwith-button google-button">
-                        
-                            <img src="Google__G__logo.svg.png" alt="google" class="signin-icons facebook-icon">
-                            <a href="https://www.google.co.in/" class="signup-google">
-                            Sign in with Google 
-                            </a>
-                        </button>
-                        <button class="signinwith-button github-button">
-                        
-                            <img src="github-logo-7880D80B8D-seeklogo.com.png" alt="google" class="signin-icons facebook-icon">
-                            <a href="https://github.com/" class="signup-github">
-                            Sign in with GitHub
-                            </a>
-                        </button>
-                        <button class="signinwith-button facebook-button">
-                        
-                            <img src="facebook logo.png" alt="google" class="signin-icons facebook-icon">
-                            <a href="https://www.facebook.com/" class="signup-facebook">
-                            Sign in with Facebook 
-                            </a>
-                        </button>
-                    </div>
-                   
-                </div>  
-                <div class="content-right">
-                    <div class="right_image_div">
-                        <img src="signup_page_image-removebg-preview.png" alt="signup" class="right-image">
-                    </div>
-                
-                    
-                    <div class="circles-inner">
-                        <div class="circle-inner circle-inner-1"></div>
-                        <div class="circle-inner circle-inner-2"></div>
-                        <div class="circle-inner circle-inner-3"></div>
-                    </div>
-                    
-                </div>      
-            </div>  
-                
-
-        
-            
+            <button type="button" class="menu-button">
+              <img src="./images/Hamburger.svg" alt="menuButton" class="menu-icon" />
+            </button>
+          </header>
         </div>
+        <div class="main-section">
+          <div class="content-left">
+            <div class="button-group">
+              <button class="signin-button">Signin</button>
+              <a href="#signup" class="signup-button">Signup</a>
+            </div>
+            <div class="credentials">
+              <fieldset>
+                <label for="signin"></label>
+                <input
+                  type="text"
+                  name="login"
+                  class="signin-text"
+                  autocomplete="off"
+                  data-cypress="Email"
+                  placeholder=" Email or Username"
+                />
+              </fieldset>
+              <fieldset>
+                <label for="password" class="password"></label>
+                <input
+                  type="password"
+                  name="password"
+                  id="password"
+                  class="signin-text"
+                  data-cypress="password"
+                  placeholder="Password"
+                />
+              </fieldset>
+              <div class="creds-footer">
+                <a href="/password_resets/new" class="forgot-password">forgot password?</a>
+                <input type="submit" value="Signin" class="submit" />
+              </div>
+            </div>
+            <div class="signinwith">
+              <button class="signinwith-button google-button">
+                <img src="Google__G__logo.svg.png" alt="google" class="signin-icons facebook-icon" />
+                <a href="https://www.google.co.in/" class="signup-google"> Sign in with Google </a>
+              </button>
+              <button class="signinwith-button github-button">
+                <img src="github-logo-7880D80B8D-seeklogo.com.png" alt="google" class="signin-icons facebook-icon" />
+                <a href="https://github.com/" class="signup-github"> Sign in with GitHub </a>
+              </button>
+              <button class="signinwith-button facebook-button">
+                <img src="facebook logo.png" alt="google" class="signin-icons facebook-icon" />
+                <a href="https://www.facebook.com/" class="signup-facebook"> Sign in with Facebook </a>
+              </button>
+            </div>
+          </div>
+          <div class="content-right">
+            <div class="right_image_div">
+              <img src="signup_page_image-removebg-preview.png" alt="signup" class="right-image" />
+            </div>
+
+            <div class="circles-inner">
+              <div class="circle-inner circle-inner-1"></div>
+              <div class="circle-inner circle-inner-2"></div>
+              <div class="circle-inner circle-inner-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>
