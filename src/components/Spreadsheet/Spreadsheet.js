@@ -11,6 +11,7 @@ import apiClient from '../../lib/api';
 import './SpreadsheetPage.css';
 import Header from '../Header';
 import { ModalContextProvider } from '../../contexts/ModalContext';
+import Toolbar from '../Toolbar/toolbar';
 
 const MemoizedHotTable = React.memo(HotTable);
 
@@ -92,9 +93,10 @@ const SpreadsheetPage = () => {
 
   return (
     <ModalContextProvider>
-      <div>
-        <Header />
-        <SpreadsheetToolbar onImportCSV={handleImportCSV} onDeleteSpreadsheet={handleDeleteSpreadsheet} />
+      <div className='container'>
+        {/* <Header />   */}
+        <Toolbar />
+        {/* <SpreadsheetToolbar onImportCSV={handleImportCSV} onDeleteSpreadsheet={handleDeleteSpreadsheet} /> */}
         {spreadsheetDataHook.loading && <CircularProgress />}
         {spreadsheetDataHook.error && (
           <Typography color="error" variant="body2">

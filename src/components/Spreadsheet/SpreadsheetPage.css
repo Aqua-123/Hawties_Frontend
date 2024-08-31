@@ -1,3 +1,7 @@
+.container{
+  display: flex;
+  flex-direction: column;
+}
 .spreadsheet-controls {
   margin-bottom: 10px;
   display: flex;
@@ -7,7 +11,7 @@
 }
 
 .spreadsheet-container {
-  margin-top: 20px;
+  margin-top: 80px;
   margin-right: 10px;
   margin-left: 10px;
 }
