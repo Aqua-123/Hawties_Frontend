@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback, useContext } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { HotTable } from '@handsontable/react';
 import 'handsontable/dist/handsontable.full.min.css';
 import { CircularProgress, Typography } from '@material-ui/core';
@@ -9,9 +9,7 @@ import useSpreadsheetSocket from '../../hooks/useSpreadsheetSocket';
 import SpreadsheetToolbar from '../SpreadsheetToolbar';
 import apiClient from '../../lib/api';
 import './SpreadsheetPage.css';
-import Header from '../Header';
 import { ModalContextProvider } from '../../contexts/ModalContext';
-import Toolbar from '../Toolbar/toolbar';
 
 const MemoizedHotTable = React.memo(HotTable);
 
@@ -93,10 +91,8 @@ const SpreadsheetPage = () => {
 
   return (
     <ModalContextProvider>
-      <div className='container'>
-        {/* <Header />   */}
-        <Toolbar />
-        {/* <SpreadsheetToolbar onImportCSV={handleImportCSV} onDeleteSpreadsheet={handleDeleteSpreadsheet} /> */}
+      <div className="container">
+        <SpreadsheetToolbar onImportFile={handleImportCSV} onDeleteSpreadsheet={handleDeleteSpreadsheet} />
         {spreadsheetDataHook.loading && <CircularProgress />}
         {spreadsheetDataHook.error && (
           <Typography color="error" variant="body2">
