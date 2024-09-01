@@ -10,7 +10,7 @@ import SpreadsheetToolbar from '../SpreadsheetToolbar';
 import apiClient from '../../lib/api';
 import './SpreadsheetPage.css';
 import { ModalContextProvider } from '../../contexts/ModalContext';
-
+import { HyperFormula } from 'hyperformula';
 const MemoizedHotTable = React.memo(HotTable);
 
 const SpreadsheetPage = () => {
@@ -89,6 +89,9 @@ const SpreadsheetPage = () => {
       spreadsheetDataHook.setError('Failed to delete spreadsheet.');
     }
   };
+  const hyperformulaInstance = HyperFormula.buildEmpty({
+    licenseKey: 'internal-use-in-handsontable',
+  });
 
   return (
     <ModalContextProvider>
@@ -112,7 +115,9 @@ const SpreadsheetPage = () => {
             contextMenu={true}
             manualRowResize={true}
             manualColumnResize={true}
-            formulas={true}
+            formulas={{
+              engine: hyperformulaInstance,
+            }}
             filters={true}
             multiColumnSorting={true}
             dropdownMenu={true}
