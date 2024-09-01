@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Button, Menu, MenuItem, IconButton, Divider, Tooltip } from '@material-ui/core';
-import { ArrowDropDown, PersonAdd, Delete, CloudDownload } from '@material-ui/icons';
-import { CloudUpload } from '@material-ui/icons';
 import { useModalContext } from '../../contexts/ModalContext';
 import '../Toolbar/toolbar.css';
-
+import { UserContext } from '../../contexts/UserContext';
+import { useContext } from 'react';
 const importOptions = [
   { label: 'CSV', accept: '.csv' },
   { label: 'Excel (XLSX)', accept: '.xlsx' },
@@ -18,6 +16,7 @@ const SpreadsheetToolbar = ({ onImportFile, onDeleteSpreadsheet }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [importMenuEl, setImportMenuEl] = React.useState(null);
   const [downloadMenuEl, setDownloadMenuEl] = React.useState(null);
+  const { user } = useContext(UserContext);
 
   const { setIsAddCollaboratorDialogOpen, setIsRemoveCollaboratorDialogOpen } = useModalContext(); // Use modal context
 
@@ -349,10 +348,7 @@ const SpreadsheetToolbar = ({ onImportFile, onDeleteSpreadsheet }) => {
             </ul>
           </div>
           <div className="profile">
-            <img
-              src="https://lh3.googleusercontent.com/fife/ALs6j_HJL7asJLfMleJoxOVK9OaWXfI3MacJxDTqx5jx-G6CtAXJiDEgwvHFXLDoby0v72ZGGDnelxnjNw4bza3UdLEZqA4CHFJU_53Xv8s7tK7o0zURh-e4u0tiqdW8DCi29p1XJSCp1Br6Cz_zQTIizyRM_3Aqf4OkXQTWHnDe5AOgEq4V8pBC62yMACq3K5KX7QNM-ERGbj69NN5G3O3ppnOni9C8elnLStQzsbRSsSM8XUaVzv-UGcnUWUrzkMPMXyRRrJsP9Bze7NbKGlYIrclp0NFPZrvzrXHkjfgBM_uxsd8XVvvW9wANcUgCWdYqDBHZz0zLVsjESMQqDwyJ8gP2hlW4IwTXsS4yef3XA_d6Ah8kE5PLkEkUTEiqSaTtfUqBg6pPEL1m30EhB3dsOcODc_75FPo5y-LHuOXZjIx60g5yuAkxWxARWnedal8gCFRpGbnlzWnknUG5NequNMRumy5bDTQLjrIoeWLUwEGfBcowEbHXeNIfoXaOYu152_B6gSDcdTWqip4K3KmcbzRGKqr0rfwjuAp56TgnvmXrDecy-0TYrjHyeccX0ts0tnFuN_jthNWvDS_8xHN2L70ja8NzHuEXq3n2XJgg925cvOwF3_cNW-lA7GzDgSHGd04gvlket6Ch0sB-itPw0_oFO1fQHcChzXRDIKNm3jojUCREGdrZDlU6xcP_qEODaXABI5LJjaRVI_c54nmH62O5INhLIV6c--nxjtqktJ9J2P7a042iFtTD51YgscS_1P5S2nLSYzoIfjXqHzpnA4Fj5-nEx3iBO5Oa9neWXlD6wAygDOSrb3T15DP4qCSGz3p9jNtQi289EANfEMczmz1iljfbB_bc2h9cz_JnYsxhGcEia078IkLuAWGG92Qfi6YLdr7op39IkaNNtjcdPUkWXqfGwy3R6Td37HcZju1NGm4dcKUvik6gZMy8QN3P8cqpvUoVTs4AmCl2adb7hS8_jm5sH8zXnLxvC5vGnAzLYJYzwAleXRj209E7LkV446oU_VJ0LPoHWOQ3RDxWUvX1r7AIf4ZKeSmqwKYtNLeInSICULPEDLO0S_O_Keub88lJ8wFI_sGS5j01qYBZDbqyvbQDEnbLPbuWCLNm7bM_mIM9pkel-2KNbNXcsWbNRUhei6rqaqmMo5M2qQlm9JA6hvibzYHsIOqf-mVO4ZZI-WZsp55Bknq7w4OTJ21sbJ0UvGyjmCEJ8KyoBf5eOO7iBj0XP1nFj2eF20kp5ai5M-4aJNghfRp-aPIa5ye_Mj5sf7ybtSrp17t0aW5YgYd0lVnaSvLt70S2GnnWIbCmmecb6HkPb5Qk5m7m8q5eZCqiQq7T3ouEVRlgtaB3XDtcHNgHy0ol5Yt8d6KLOXaAym6v_8VSUxt9t-4GdeCPoXDcMa9QKRxvbo0=s64-c"
-              alt=""
-            />
+            <img src={user?.photoURL || 'https://via.placeholder.com/150'} alt="" />
           </div>
         </div>
       </div>

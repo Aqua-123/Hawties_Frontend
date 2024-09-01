@@ -8,7 +8,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
 import './SpreadsheetsPage.css';
 import image from './unnamed.png';
-
 const SpreadsheetsPage = () => {
   const { user } = useContext(UserContext);
   const [newSpreadsheetName, setNewSpreadsheetName] = useState('Untitled spreadsheet');

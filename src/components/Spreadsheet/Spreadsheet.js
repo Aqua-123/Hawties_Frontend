@@ -66,6 +66,7 @@ const SpreadsheetPage = () => {
     spreadsheetDataHook.setLoading(true);
     try {
       const result = await apiClient.importData(id, file);
+      console.log(result);
       if (result.success) {
         spreadsheetDataHook.setNewSpreadsheetData(result.data);
         return;
