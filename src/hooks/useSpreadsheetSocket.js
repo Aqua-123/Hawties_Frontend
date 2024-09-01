@@ -16,7 +16,7 @@ const useSpreadsheetSocket = (id, hotTableRef) => {
   }, [id]);
 
   const initializeSocketConnection = () => {
-    socketRef.current = io('http://localhost:5000');
+    socketRef.current = io('https://hawties_api.futurixai.com');
     socketRef.current.emit('joinSpreadsheet', id);
 
     socketRef.current.on('cellChanged', handleRemoteCellChange);
