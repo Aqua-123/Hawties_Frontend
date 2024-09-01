@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { auth, waitForFirebaseAuth } from './lib/firebase';
 
-const isDev = true; // Toggle this to `false` for production
+const isDev = false; // Toggle this to `false` for production
 const getFirebaseToken = async () => {
   await waitForFirebaseAuth(); // Ensure Firebase is initialized and the auth state is set
   if (auth.currentUser) {
@@ -16,7 +16,7 @@ const getFirebaseToken = async () => {
   return '';
 };
 const axiosClient = axios.create({
-  baseURL: isDev ? 'http://localhost:5000' : 'https://your-production-url.com',
+  baseURL: isDev ? 'http://localhost:5000' : 'https://hawties_api.futurixai.com/',
   headers: {
     'Content-Type': 'application/json',
     Authorization: `Bearer ${localStorage.getItem('token')}`,
